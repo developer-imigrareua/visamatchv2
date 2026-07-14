@@ -16,17 +16,27 @@ async function extractLinkedIn(linkedinUrl) {
   const snapshotId = triggerRes.data?.snapshot_id;
   if (!snapshotId) throw new Error('Bright Data não retornou snapshot_id.');
 
-  // 2. Poll until ready (max 30s)
-  for (let i = 0; i < 10; i++) {
-    await new Promise(r => setTimeout(r, 3000));
-    const statusRes = await axios.get(
-      `https://api.brightdata.com/datasets/v3/snapshot/${snapshotId}?format=json`,
-      { headers: { Authorization: `Bearer ${API_KEY}` } }
-    );
-    if (statusRes.data?.status === 'ready' || Array.isArray(statusRes.data)) {
-      const raw = Array.isArray(statusRes.data) ? statusRes.data[0] : statusRes.data;
-      return parseLinkedInProfile(raw);
+  // 2. Poll until ready (max 2min30s — jobs podem levar até ~100s)
+  for (let i = 0; i < 30; i++) {
+    await new Promise(r => setTimeout(r, 5000));
+    let statusRes;
+    try {
+      statusRes = await axios.get(
+        `https://api.brightdata.com/datasets/v3/snapshot/${snapshotId}?format=json`,
+        { headers: { Authorization: `Bearer ${API_KEY}` } }
+      );
+    } catch (e) { continue; }
+
+    const data = statusRes.data;
+    // Retorno final é um array com os registros
+    if (Array.isArray(data) && data.length > 0) {
+      return parseLinkedInProfile(data[0]);
     }
+    // Alguns planos retornam objeto com status
+    if (data?.status === 'ready' && data?.data) {
+      return parseLinkedInProfile(Array.isArray(data.data) ? data.data[0] : data.data);
+    }
+    // Ainda processando — continua polling
   }
   throw new Error('Timeout ao aguardar dados do LinkedIn.');
 }
