@@ -32,11 +32,15 @@ PERFIL LINKEDIN EXTRAÍDO:
 - Nome: ${linkedinProfile.nome || 'não informado'}
 - Título: ${linkedinProfile.titulo || 'não informado'}
 - Localização: ${linkedinProfile.localizacao || 'não informado'}
+- Conexões: ${linkedinProfile.conexoes || 'não informado'}
+- Resumo: ${linkedinProfile.resumo ? linkedinProfile.resumo.slice(0, 300) : 'não informado'}
 - Formação: ${linkedinProfile.formacao?.map(f => `${f.grau} em ${f.curso} (${f.instituicao})`).join('; ') || 'não encontrada'}
-- Experiência: ${linkedinProfile.experiencia?.slice(0,3).map(e => `${e.cargo} na ${e.empresa}`).join('; ') || 'não encontrada'}
+- Experiência: ${linkedinProfile.experiencia?.slice(0,5).map(e => `${e.cargo} na ${e.empresa} (${e.inicio||'?'} – ${e.fim||'atual'})`).join('; ') || 'não encontrada'}
 - Publicações: ${linkedinProfile.publicacoes?.length || 0}
-- Prêmios: ${linkedinProfile.premios?.length || 0}
-- Certificações: ${linkedinProfile.certificacoes?.length || 0}
+- Prêmios/Honrarias: ${linkedinProfile.premios?.length || 0}
+- Certificações: ${linkedinProfile.certificacoes?.map(c => c.name || c).join(', ') || 'nenhuma'}
+- Habilidades: ${linkedinProfile.habilidades?.slice(0,10).join(', ') || 'não informado'}
+- Idiomas: ${linkedinProfile.idiomas?.join(', ') || 'não informado'}
 ` : 'Perfil LinkedIn não disponível.';
 
   const missingByVisa = visaPath.map(v => {

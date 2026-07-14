@@ -34,10 +34,12 @@ async function extractLinkedIn(linkedinUrl) {
 function parseLinkedInProfile(raw) {
   if (!raw) return {};
   return {
-    nome: raw.name || raw.first_name ? `${raw.first_name || ''} ${raw.last_name || ''}`.trim() : null,
+    nome: raw.name || (raw.first_name ? `${raw.first_name || ''} ${raw.last_name || ''}`.trim() : null),
     titulo: raw.headline || null,
-    localizacao: raw.location || null,
+    localizacao: raw.location || raw.city || null,
     resumo: raw.about || raw.summary || null,
+    foto: raw.profile_image_url || raw.photo_url || raw.picture || raw.avatar || null,
+    conexoes: raw.connections || raw.followers_count || null,
     formacao: (raw.education || []).map(e => ({
       instituicao: e.school || e.institution,
       curso: e.field_of_study || e.degree_name,
@@ -57,7 +59,7 @@ function parseLinkedInProfile(raw) {
     certificacoes: raw.certifications || [],
     habilidades: (raw.skills || []).map(s => s.name || s),
     idiomas: (raw.languages || []).map(l => l.name || l),
-    url: raw.url || raw.linkedin_url || null,
+    url: raw.url || raw.linkedin_url || raw.input_url || null,
   };
 }
 

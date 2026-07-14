@@ -103,6 +103,9 @@ function computeAnalysis(visaPath, profile, session) {
     label: best.label,
     partner: best.partner,
     profile,
+    linkedin_foto: session.linkedin_profile?.foto || null,
+    linkedin_nome: session.linkedin_profile?.nome || null,
+    linkedin_titulo: session.linkedin_profile?.titulo || null,
   };
 }
 
