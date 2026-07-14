@@ -114,14 +114,14 @@
 </div>
 
 <script>
-const API = 'https://api-v2.visamatch.imigrareua.com'; // troque pelo domínio real
+const API = 'https://monitoring-v2-visamatch.uzjves.easypanel.host';
 let _token = '';
 let _leads = [];
 let _searchTimer;
 
 async function doLogin() {
   const pwd = document.getElementById('pwd').value;
-  const r = await fetch(`${API}/admin/login`, {
+  const r = await fetch(`${API}/admin-api/login`, {
     method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({password: pwd})
   });
   const d = await r.json();
@@ -144,14 +144,14 @@ async function loadAll() {
 }
 
 async function loadStats() {
-  const d = await apiFetch('/admin/stats');
+  const d = await apiFetch('/admin-api/stats');
   document.getElementById('s-total').textContent = d.total ?? '—';
   document.getElementById('s-complete').textContent = d.completed ?? '—';
   document.getElementById('s-synced').textContent = d.synced ?? '—';
 }
 
 async function loadLeads(q='') {
-  const d = await apiFetch('/admin/leads?limit=100' + (q ? `&q=${encodeURIComponent(q)}` : ''));
+  const d = await apiFetch('/admin-api/leads?limit=100' + (q ? `&q=${encodeURIComponent(q)}` : ''));
   _leads = d.leads || [];
   renderLeads(_leads);
 }
@@ -175,7 +175,7 @@ function searchLeads(q) {
 }
 
 async function loadHubSpotLogs() {
-  const d = await apiFetch('/admin/hubspot-logs');
+  const d = await apiFetch('/admin-api/hubspot-logs');
   const logs = d.logs || [];
   const summary = document.getElementById('hs-summary');
   if (logs.length === 0) {
@@ -201,13 +201,13 @@ async function loadHubSpotLogs() {
 
 async function retrySyncLead(id, btn) {
   btn.disabled = true; btn.textContent = '...';
-  const d = await apiFetch(`/admin/leads/${id}/hubspot-sync`, {method:'POST'});
+  const d = await apiFetch(`/admin-api/leads/${id}/hubspot-sync`, {method:'POST'});
   if (d.success) { loadHubSpotLogs(); loadStats(); }
   else { btn.textContent = 'Erro'; btn.disabled = false; }
 }
 
 async function showLead(id) {
-  const d = await apiFetch(`/admin/leads/${id}`);
+  const d = await apiFetch(`/admin-api/leads/${id}`);
   const modal = document.getElementById('lead-modal');
   document.getElementById('modal-title').textContent = d.nome || d.email;
   const body = document.getElementById('modal-body');
