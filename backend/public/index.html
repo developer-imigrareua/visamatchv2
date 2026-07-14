@@ -2,291 +2,312 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VisaMatch — Análise de Perfil para Imigração</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Visa Match · ImigrarEUA</title>
+<link rel="icon" type="image/jpeg" href="https://lp.imigrareua.com/wp-content/uploads/2026/01/612990932_18427147024116839_8350086382818301433_n.jpg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{--c-bg:#0d1117;--c-surface:#161b22;--c-border:#30363d;--c-text:#e6edf3;--c-muted:#8b949e;--c-accent:#2563eb;--c-accent-h:#1d4ed8;--c-green:#22c55e;--c-red:#ef4444;--radius:12px}
-  body{background:var(--c-bg);color:var(--c-text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px}
-  .logo{margin-bottom:32px;text-align:center}
-  .logo h1{font-size:1.5rem;font-weight:700;letter-spacing:-0.5px}
-  .logo p{color:var(--c-muted);font-size:.875rem;margin-top:4px}
-  .card{background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius);width:100%;max-width:600px;padding:24px}
-  /* Contact form */
-  #contact-screen .field{margin-bottom:16px}
-  #contact-screen label{display:block;font-size:.8rem;color:var(--c-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
-  #contact-screen input{width:100%;background:#0d1117;border:1px solid var(--c-border);border-radius:8px;padding:10px 14px;color:var(--c-text);font-size:1rem;outline:none;transition:border .2s}
-  #contact-screen input:focus{border-color:var(--c-accent)}
-  .linkedin-row{display:flex;gap:8px;align-items:flex-end}
-  .linkedin-row input{flex:1}
-  .btn{background:var(--c-accent);color:#fff;border:none;border-radius:8px;padding:11px 20px;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .2s;white-space:nowrap}
-  .btn:hover{background:var(--c-accent-h)}
-  .btn:disabled{opacity:.5;cursor:not-allowed}
-  .btn-full{width:100%;margin-top:8px;padding:13px}
-  .hint{font-size:.78rem;color:var(--c-muted);margin-top:6px}
-  /* Chat */
-  #chat-screen{display:none;flex-direction:column;height:70vh}
-  #chat-screen.active{display:flex}
-  #messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-bottom:8px}
-  .msg{max-width:88%;padding:12px 16px;border-radius:var(--radius);line-height:1.5;font-size:.95rem}
-  .msg.assistant{background:#1e2736;border:1px solid var(--c-border);align-self:flex-start;border-radius:4px 12px 12px 12px}
-  .msg.user{background:var(--c-accent);align-self:flex-end;border-radius:12px 4px 12px 12px}
-  .input-row{display:flex;gap:8px;margin-top:12px}
-  #user-input{flex:1;background:#0d1117;border:1px solid var(--c-border);border-radius:8px;padding:10px 14px;color:var(--c-text);font-size:.95rem;outline:none;resize:none;transition:border .2s;max-height:120px}
-  #user-input:focus{border-color:var(--c-accent)}
-  /* Result */
-  #result-screen{display:none}
-  #result-screen.active{display:block}
-  .result-header{text-align:center;margin-bottom:24px}
-  .result-header .label{font-size:1.4rem;font-weight:700;margin-bottom:4px}
-  .result-header .visto{color:var(--c-muted);font-size:.9rem}
-  .score-bar{background:#0d1117;border-radius:99px;height:12px;margin:16px 0;overflow:hidden}
-  .score-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#2563eb,#22c55e);transition:width 1s ease}
-  .vistos-list{display:flex;flex-direction:column;gap:8px}
-  .visto-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#0d1117;border-radius:8px;border:1px solid var(--c-border)}
-  .visto-item .name{font-weight:600}
-  .visto-item .score-num{color:var(--c-muted);font-size:.85rem}
-  .cta-box{margin-top:24px;padding:20px;background:#1e2736;border:1px solid var(--c-border);border-radius:var(--radius);text-align:center}
-  .cta-box p{color:var(--c-muted);margin-bottom:16px;font-size:.9rem}
-  .cta-box a{display:inline-block;background:var(--c-accent);color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600;transition:background .2s}
-  .cta-box a:hover{background:var(--c-accent-h)}
-  /* Loading */
-  .typing{display:flex;gap:4px;align-items:center;padding:4px 0}
-  .typing span{width:6px;height:6px;border-radius:50%;background:var(--c-muted);animation:bounce .8s infinite}
-  .typing span:nth-child(2){animation-delay:.15s}
-  .typing span:nth-child(3){animation-delay:.3s}
-  @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
-  .linkedin-status{font-size:.78rem;margin-top:4px}
-  .linkedin-status.ok{color:var(--c-green)}
-  .linkedin-status.err{color:var(--c-muted)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#0053d0;--blue2:#1A72F6;--blue3:#003fa3;--blue4:#002b70;
+  --pink:#ff4b82;
+  --surface:#ffffff;--surface2:#f8faff;--surface3:#f0f4ff;--surface4:#e5eeff;
+  --txt:#0b1c30;--txt2:#424655;--txt3:#737687;
+  --border:rgba(194,198,216,.5);--border2:rgba(194,198,216,.8);
+  --green:#1d9e70;--sh:0 2px 12px rgba(11,28,48,.08);--sh2:0 8px 32px rgba(11,28,48,.12)
+}
+html,body{height:100%;font-family:"Inter Tight","Inter",sans-serif;background:var(--surface2);color:var(--txt);overflow:hidden}
+.app{display:grid;grid-template-columns:288px 1fr;height:100vh;overflow:hidden}
+.sidebar{background:linear-gradient(180deg,#1A72F6 0%,#002b70 100%);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.sb-glow{position:absolute;bottom:0;left:0;right:0;height:55%;background-image:url('https://lp.imigrareua.com/wp-content/uploads/2026/06/bandeira-eua-desfoque-visamatch.png');background-size:cover;background-position:center top;opacity:.38;pointer-events:none;z-index:0}
+.sb-inner{position:relative;z-index:1;display:flex;flex-direction:column;height:100%;padding:28px 20px}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)}
+.brand-ico{width:44px;height:44px;background:#fff;border-radius:50%;overflow:hidden;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.2);border:2px solid rgba(255,255,255,.4)}
+.brand-ico img{width:100%;height:100%;object-fit:cover}
+.brand-name{font-family:Manrope,sans-serif;font-size:18px;color:#fff;font-weight:700}
+.brand-by{font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-top:1px}
+.sb-section{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);font-weight:600;margin-bottom:10px;padding-left:4px}
+.steps{display:flex;flex-direction:column;gap:4px;flex:1}
+.step{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;transition:all .25s;cursor:default;border:1px solid transparent}
+.step.active{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.2)}
+.step.done{opacity:.7}
+.step.idle{opacity:.35}
+.step-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;transition:all .25s}
+.step.active .step-num{background:#fff;color:var(--blue)}
+.step.done .step-num{background:rgba(255,255,255,.15);color:#fff;font-size:14px}
+.step.idle .step-num{background:transparent;color:rgba(255,255,255,.4);border:1.5px solid rgba(255,255,255,.2)}
+.step-label{font-size:13px;font-weight:600;color:rgba(255,255,255,.9)}
+.step.active .step-label{color:#fff;font-weight:700}
+.step-desc{font-size:10.5px;color:rgba(255,255,255,.45);margin-top:1px}
+.sb-card{background:rgba(255,255,255,.1);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:16px;margin-top:20px}
+.sb-card-lbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px;font-weight:600}
+.sb-visto{font-family:Manrope,sans-serif;font-size:17px;color:#fff;min-height:22px;font-weight:700}
+.sb-bar-bg{height:4px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden;margin-top:10px}
+.sb-bar{height:100%;background:var(--pink);border-radius:4px;transition:width .7s cubic-bezier(.4,0,.2,1);width:0%}
+.main{display:flex;flex-direction:column;height:100vh;overflow:hidden;background:var(--surface2)}
+.main-head{padding:18px 36px;background:rgba(255,255,255,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.head-title{font-family:Manrope,sans-serif;font-size:20px;color:var(--txt);font-weight:700}
+.head-sub{font-size:12px;color:var(--txt3);margin-top:2px;font-weight:500}
+.online-badge{display:flex;align-items:center;gap:7px;background:#fff;border:1.5px solid var(--border);border-radius:99px;padding:6px 16px;font-size:12px;color:var(--txt2);font-weight:600;box-shadow:var(--sh)}
+.green-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.prog-strip{height:3px;background:var(--surface4);flex-shrink:0}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--pink));transition:width .6s ease;width:0%}
+.chat{flex:1;overflow-y:auto;padding:28px 32px 16px;display:flex;flex-direction:column;gap:18px;scroll-behavior:smooth}
+.chat::-webkit-scrollbar{width:4px}
+.chat::-webkit-scrollbar-thumb{background:rgba(115,118,135,.2);border-radius:4px}
+.row{display:flex;gap:12px;align-items:flex-end;animation:msgIn .3s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+.row.user{flex-direction:row-reverse}
+.ava{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;box-shadow:var(--sh)}
+.ava-bot{background:#fff;border:2px solid rgba(0,83,208,.15);overflow:hidden;padding:0}
+.ava-bot img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.ava-user{background:linear-gradient(135deg,var(--blue),var(--pink));color:#fff}
+.msg-wrap{max-width:68%}
+.bubble{padding:14px 18px;border-radius:18px;font-size:14px;line-height:1.65}
+.bot-b{background:#fff;border:1px solid var(--border);border-radius:4px 18px 18px 18px;color:var(--txt);box-shadow:var(--sh);white-space:pre-wrap}
+.user-b{background:var(--surface2);border:1px solid var(--border);border-radius:18px 18px 4px 18px;color:var(--txt)}
+.ts{font-size:10px;color:var(--txt3);margin-top:4px;padding:0 4px;opacity:.6}
+.row.user .ts{text-align:right}
+.typing-bub{background:#fff;border:1px solid var(--border);border-radius:4px 18px 18px 18px;padding:14px 18px;display:inline-flex;gap:5px;align-items:center;box-shadow:var(--sh)}
+.typing-bub span{width:6px;height:6px;background:var(--txt3);border-radius:50%;animation:tb 1.2s infinite}
+.typing-bub span:nth-child(2){animation-delay:.15s}
+.typing-bub span:nth-child(3){animation-delay:.3s}
+@keyframes tb{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+.input-zone{padding:14px 36px calc(18px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.92);backdrop-filter:blur(16px);border-top:1px solid var(--border);flex-shrink:0}
+.input-row{display:flex;gap:8px;align-items:center;background:#fff;border:1.5px solid var(--border2);border-radius:16px;padding:6px 6px 6px 18px;transition:border-color .2s,box-shadow .2s}
+.input-row:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,83,208,.06)}
+.txt-in{flex:1;background:none;border:none;outline:none;font-family:"Inter Tight","Inter",sans-serif;font-size:16px;color:var(--txt);padding:7px 0}
+.txt-in::placeholder{color:var(--txt3)}
+.send-b{width:40px;height:40px;border:none;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--blue),var(--pink));transition:all .15s;flex-shrink:0}
+.send-b:hover{opacity:.9;transform:scale(1.04)}
+.send-b svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.res-card{background:#fff;border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:var(--sh2)}
+.res-head{background:linear-gradient(135deg,var(--blue4) 0%,var(--blue3) 100%);padding:24px 28px;position:relative;overflow:hidden}
+.res-visto{font-family:Manrope,sans-serif;font-size:26px;color:#fff;margin-bottom:4px;font-weight:700}
+.res-label{font-size:12px;color:rgba(255,255,255,.7)}
+.res-circle{position:absolute;top:20px;right:26px;width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.25);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.res-pts{font-family:Manrope,sans-serif;font-size:22px;color:#fff;line-height:1;font-weight:800}
+.res-pts-lbl{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.05em;text-transform:uppercase}
+.res-body{padding:22px 28px}
+.partner-cta{border-radius:14px;padding:16px 18px;margin-bottom:16px;display:flex;align-items:flex-start;gap:14px}
+.partner-cta.liv{background:linear-gradient(135deg,rgba(0,43,112,.05),rgba(0,83,208,.08));border:1.5px solid rgba(0,83,208,.15)}
+.partner-cta.phoenix{background:rgba(0,83,208,.04);border:1.5px solid rgba(0,83,208,.12)}
+.partner-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.partner-ico.liv{background:linear-gradient(135deg,var(--blue),var(--pink))}
+.partner-ico.phoenix{background:linear-gradient(135deg,var(--blue4),var(--blue3))}
+.partner-info{flex:1}
+.partner-name{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:2px}
+.partner-desc{font-size:12px;color:var(--txt2);line-height:1.55}
+.partner-btn{margin-top:9px;display:inline-block;background:linear-gradient(135deg,var(--blue),var(--pink));color:#fff;text-decoration:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;transition:all .2s}
+.partner-btn.phoenix-btn{background:var(--blue4)}
+.disclaimer{font-size:11px;color:var(--txt3);text-align:center;line-height:1.65;margin-top:12px}
+@media(max-width:760px){
+  .app{grid-template-columns:1fr;height:100dvh}
+  .sidebar{display:none}
+  .main-head{padding:11px 16px}
+  .head-title{font-size:17px}
+  .chat{padding:14px 12px;padding-bottom:120px !important}
+  .msg-wrap{max-width:86% !important}
+  .bubble{font-size:13px;padding:11px 14px}
+  .ava{width:30px;height:30px}
+  .input-zone{padding:12px 14px calc(env(safe-area-inset-bottom,0px) + 60px)}
+  .txt-in{font-size:16px}
+  .online-badge{font-size:10px;padding:5px 12px}
+}
 </style>
 </head>
 <body>
-
-<div class="logo">
-  <h1>VisaMatch</h1>
-  <p>Análise de perfil para imigração americana</p>
-</div>
-
-<!-- Tela 1: Contato + LinkedIn -->
-<div class="card" id="contact-screen">
-  <div class="field">
-    <label>Nome completo</label>
-    <input type="text" id="inp-nome" placeholder="Seu nome" autocomplete="name">
-  </div>
-  <div class="field">
-    <label>E-mail</label>
-    <input type="email" id="inp-email" placeholder="seu@email.com" autocomplete="email">
-  </div>
-  <div class="field">
-    <label>WhatsApp</label>
-    <input type="tel" id="inp-phone" placeholder="+55 11 99999-9999" autocomplete="tel">
-  </div>
-  <div class="field">
-    <label>LinkedIn <span style="color:var(--c-muted);font-weight:400">(opcional)</span></label>
-    <div class="linkedin-row">
-      <input type="url" id="inp-linkedin" placeholder="https://linkedin.com/in/seuperfil">
-      <button class="btn" id="btn-linkedin" onclick="extractLinkedIn()">Analisar</button>
+<div class="app">
+<aside class="sidebar">
+  <div class="sb-glow"></div>
+  <div class="sb-inner">
+    <div class="brand">
+      <div class="brand-ico"><img src="https://lp.imigrareua.com/wp-content/uploads/2026/01/612990932_18427147024116839_8350086382818301433_n.jpg" alt="ImigrarEUA"/></div>
+      <div><div class="brand-name">Visa Match</div><div class="brand-by">ImigrarEUA</div></div>
     </div>
-    <div id="linkedin-status" class="linkedin-status"></div>
-    <p class="hint">Adicionar seu LinkedIn melhora a precisão da análise.</p>
+    <div class="sb-section">Etapas</div>
+    <div class="steps" id="sb-steps">
+      <div class="step active" data-s="0"><div class="step-num">1</div><div><div class="step-label">Contato</div><div class="step-desc">Identificação inicial</div></div></div>
+      <div class="step idle"  data-s="1"><div class="step-num">2</div><div><div class="step-label">LinkedIn</div><div class="step-desc">Extração de perfil</div></div></div>
+      <div class="step idle"  data-s="2"><div class="step-num">3</div><div><div class="step-label">Entrevista</div><div class="step-desc">Perguntas guiadas</div></div></div>
+      <div class="step idle"  data-s="3"><div class="step-num">4</div><div><div class="step-label">Análise</div><div class="step-desc">Critérios de visto</div></div></div>
+      <div class="step idle"  data-s="4"><div class="step-num">5</div><div><div class="step-label">Resultado</div><div class="step-desc">Recomendação final</div></div></div>
+    </div>
+    <div class="sb-card">
+      <div class="sb-card-lbl">Avaliando perfil para o Visto</div>
+      <div class="sb-visto" id="sb-visto">—</div>
+      <div class="sb-bar-bg"><div class="sb-bar" id="sb-bar"></div></div>
+    </div>
   </div>
-  <button class="btn btn-full" onclick="startChat()">Iniciar análise</button>
-</div>
-
-<!-- Tela 2: Chat -->
-<div class="card" id="chat-screen">
-  <div id="messages"></div>
-  <div class="input-row">
-    <textarea id="user-input" placeholder="Digite sua resposta..." rows="1" onkeydown="handleKey(event)"></textarea>
-    <button class="btn" onclick="sendMessage()">Enviar</button>
+</aside>
+<main class="main">
+  <div class="main-head">
+    <div><div class="head-title">Análise de Perfil</div><div class="head-sub">Avaliação para imigração americana • V2</div></div>
+    <div class="online-badge"><div class="green-dot"></div>Assistente Online</div>
   </div>
-</div>
-
-<!-- Tela 3: Resultado -->
-<div class="card" id="result-screen">
-  <div class="result-header">
-    <div class="label" id="res-label"></div>
-    <div class="visto" id="res-visto"></div>
+  <div class="prog-strip"><div class="prog-fill" id="prog"></div></div>
+  <div class="chat" id="chat"></div>
+  <div class="input-zone">
+    <div class="input-row">
+      <input class="txt-in" id="ti" type="text" placeholder="Digite sua resposta..." autocomplete="off" autocorrect="off" spellcheck="false"/>
+      <button class="send-b" id="send-btn">
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
   </div>
-  <div class="score-bar"><div class="score-fill" id="res-bar" style="width:0%"></div></div>
-  <div class="vistos-list" id="res-vistos"></div>
-  <div class="cta-box" id="res-cta"></div>
+</main>
 </div>
-
 <script>
 const API = 'https://monitoring-v2-visamatch.uzjves.easypanel.host';
-let S = { session_id: null, nome: '', email: '', phone: '', linkedin_profile: null };
-let _sending = false;
+const S = { nome:'', email:'', phone:'', session_id: 'v2_'+Math.random().toString(36).slice(2)+Date.now().toString(36), linkedin_profile: null };
+const AVA_SRC = 'https://lp.imigrareua.com/wp-content/uploads/2026/01/612990932_18427147024116839_8350086382818301433_n.jpg';
+let _handler = null, _sending = false;
 
-function genSessionId() {
-  return 'v2_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
-}
+function ts() { return new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+function getUtms() { const p=new URLSearchParams(location.search); return {utm_source:p.get('utm_source'),utm_medium:p.get('utm_medium'),utm_campaign:p.get('utm_campaign'),utm_content:p.get('utm_content')}; }
 
-// Captura UTMs
-function getUtms() {
-  const p = new URLSearchParams(window.location.search);
-  return { utm_source: p.get('utm_source'), utm_medium: p.get('utm_medium'),
-           utm_campaign: p.get('utm_campaign'), utm_content: p.get('utm_content') };
-}
+const chatEl = document.getElementById('chat');
+const ti = document.getElementById('ti');
 
-async function extractLinkedIn() {
-  const url = document.getElementById('inp-linkedin').value.trim();
-  if (!url) return;
-  const btn = document.getElementById('btn-linkedin');
-  const status = document.getElementById('linkedin-status');
-  btn.disabled = true; btn.textContent = '...';
-  status.textContent = 'Buscando perfil...'; status.className = 'linkedin-status';
-  try {
-    const r = await fetch(`${API}/linkedin/extract`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url }),
-    });
-    const d = await r.json();
-    if (d.success && d.profile?.nome) {
-      S.linkedin_profile = d.profile;
-      status.textContent = `✓ Perfil encontrado: ${d.profile.nome}`;
-      status.className = 'linkedin-status ok';
-    } else {
-      status.textContent = 'Perfil não encontrado — continuaremos sem LinkedIn.';
-      status.className = 'linkedin-status err';
-    }
-  } catch {
-    status.textContent = 'Erro ao buscar perfil. Continuaremos sem LinkedIn.';
-    status.className = 'linkedin-status err';
-  }
-  btn.disabled = false; btn.textContent = 'Analisar';
-}
+function scrollBottom() { requestAnimationFrame(()=>chatEl.scrollTo({top:chatEl.scrollHeight,behavior:'smooth'})); }
 
-async function startChat() {
-  const nome = document.getElementById('inp-nome').value.trim();
-  const email = document.getElementById('inp-email').value.trim();
-  const phone = document.getElementById('inp-phone').value.trim();
-
-  if (!nome || !email) return alert('Nome e e-mail são obrigatórios.');
-  if (!/\S+@\S+\.\S+/.test(email)) return alert('E-mail inválido.');
-
-  S = { ...S, nome, email, phone, session_id: genSessionId() };
-
-  // Salva parcial imediatamente
-  fetch(`${API}/lead/partial`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ session_id: S.session_id, nome, email, phone }),
-  }).catch(() => {});
-
-  document.getElementById('contact-screen').style.display = 'none';
-  document.getElementById('chat-screen').classList.add('active');
-
-  addTyping();
-  try {
-    const r = await fetch(`${API}/chat/start`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session_id: S.session_id, nome, email, phone, linkedin_profile: S.linkedin_profile }),
-    });
-    const d = await r.json();
-    removeTyping();
-    addMessage('assistant', d.message);
-  } catch {
-    removeTyping();
-    addMessage('assistant', 'Olá! Vamos começar sua análise de perfil. Qual é a sua profissão principal?');
-  }
-}
-
-async function sendMessage() {
-  if (_sending) return;
-  const input = document.getElementById('user-input');
-  const text = input.value.trim();
-  if (!text) return;
-
-  _sending = true;
-  addMessage('user', text);
-  input.value = '';
-  input.style.height = 'auto';
-  addTyping();
-
-  try {
-    const r = await fetch(`${API}/chat/message`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session_id: S.session_id, content: text }),
-    });
-    const d = await r.json();
-    removeTyping();
-    addMessage('assistant', d.message);
-
-    if (d.is_ready && d.analysis) {
-      setTimeout(() => showResult(d.analysis), 1500);
-    }
-  } catch {
-    removeTyping();
-    addMessage('assistant', 'Desculpe, houve um erro. Pode repetir?');
-  }
-  _sending = false;
-}
-
-function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-  // Auto-resize
-  e.target.style.height = 'auto';
-  e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
-}
-
-function addMessage(role, text) {
-  const msgs = document.getElementById('messages');
-  const div = document.createElement('div');
-  div.className = `msg ${role}`;
-  div.textContent = text;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
+function addMsg(role, text) {
+  const row = document.createElement('div');
+  row.className = 'row'+(role==='user'?' user':'');
+  const ava = document.createElement('div');
+  ava.className = 'ava '+(role==='user'?'ava-user':'ava-bot');
+  if (role==='user') ava.textContent = S.nome?S.nome[0].toUpperCase():'U';
+  else ava.innerHTML = '<img src="'+AVA_SRC+'" alt=""/>';
+  const wrap = document.createElement('div'); wrap.className='msg-wrap';
+  const bub = document.createElement('div'); bub.className='bubble '+(role==='user'?'user-b':'bot-b');
+  bub.textContent = text;
+  const t = document.createElement('div'); t.className='ts'; t.textContent=ts();
+  wrap.appendChild(bub); wrap.appendChild(t);
+  row.appendChild(ava); row.appendChild(wrap);
+  chatEl.appendChild(row); scrollBottom();
 }
 
 function addTyping() {
-  const msgs = document.getElementById('messages');
-  const div = document.createElement('div');
-  div.className = 'msg assistant'; div.id = 'typing-indicator';
-  div.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
+  const row=document.createElement('div'); row.className='row'; row.id='typing';
+  row.innerHTML='<div class="ava ava-bot"><img src="'+AVA_SRC+'" alt=""/></div><div class="msg-wrap"><div class="typing-bub"><span></span><span></span><span></span></div></div>';
+  chatEl.appendChild(row); scrollBottom();
 }
+function removeTyping() { document.getElementById('typing')?.remove(); }
 
-function removeTyping() {
-  document.getElementById('typing-indicator')?.remove();
-}
-
-function showResult(analysis) {
-  document.getElementById('chat-screen').classList.remove('active');
-  const res = document.getElementById('result-screen');
-  res.classList.add('active');
-
-  document.getElementById('res-label').textContent = analysis.label;
-  document.getElementById('res-visto').textContent = `Visto em destaque: ${analysis.visto_recomendado}`;
-
-  const score = Math.max(0, Math.min(100, analysis.score + 50)); // normaliza -100..100 → 0..100
-  setTimeout(() => document.getElementById('res-bar').style.width = score + '%', 100);
-
-  const list = document.getElementById('res-vistos');
-  (analysis.vistos || []).forEach(v => {
-    const item = document.createElement('div');
-    item.className = 'visto-item';
-    item.innerHTML = `<span class="name">${v.visto}</span><span class="score-num">${v.label}</span>`;
-    list.appendChild(item);
+function setStep(n) {
+  document.querySelectorAll('.step').forEach(el=>{
+    const s=+el.dataset.s;
+    el.className='step '+(s<n?'done':s===n?'active':'idle');
+    el.querySelector('.step-num').textContent=s<n?'✓':s+1;
   });
-
-  // CTA baseado no partner
-  const cta = document.getElementById('res-cta');
-  if (analysis.partner === 'liv') {
-    cta.innerHTML = `<p>Seu perfil tem potencial para imigração para os EUA. Um especialista pode avaliar seu caso em detalhe.</p>
-      <a href="https://wa.link/pxtk7k" target="_blank" rel="noopener">Falar com especialista</a>`;
-  } else {
-    cta.innerHTML = `<p>Identificamos caminhos possíveis para o seu perfil. Conheça nossas soluções de assessoria.</p>
-      <a href="https://lp.imigrareua.com/novos-caminhos-imigrareua/" target="_blank" rel="noopener">Saiba mais</a>`;
-  }
-
-  // Salva lead completo
-  fetch(`${API}/lead/complete`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ session_id: S.session_id, nome: S.nome, email: S.email, phone: S.phone, analysis, utm: getUtms() }),
-  }).catch(() => {});
 }
+function setProgress(p) { document.getElementById('prog').style.width=p+'%'; document.getElementById('sb-bar').style.width=p+'%'; }
+function setSideVisto(v) { if(v) document.getElementById('sb-visto').textContent=v; }
+
+async function bot(text, delay=600) {
+  await new Promise(r=>setTimeout(r,200));
+  addTyping();
+  await new Promise(r=>setTimeout(r,delay));
+  removeTyping();
+  addMsg('assistant', text);
+}
+
+function onSend() {
+  const val=ti.value.trim(); if(!val||_sending) return;
+  ti.value='';
+  if(_handler) _handler(val);
+}
+document.getElementById('send-btn').addEventListener('click', onSend);
+ti.addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();onSend();} });
+
+// ── FLUXO CONTATO ──
+async function askNome() {
+  await bot('Olá! Sou o assistente da ImigrarEUA. Vou analisar seu perfil para imigração americana.\n\nQual é o seu nome completo?', 800);
+  _handler = val => { addMsg('user',val); S.nome=val; document.querySelectorAll('.ava-user').forEach(a=>a.textContent=val[0].toUpperCase()); setProgress(10); askEmail(); };
+}
+
+async function askEmail() {
+  await bot('Prazer, '+S.nome.split(' ')[0]+'! Qual é o seu melhor e-mail?');
+  _handler = val => {
+    if(!/\S+@\S+\.\S+/.test(val)){ addMsg('user',val); bot('Esse e-mail não parece válido. Pode confirmar?',400); return; }
+    addMsg('user',val); S.email=val;
+    fetch(API+'/lead/partial',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:S.nome,email:S.email})}).catch(()=>{});
+    setProgress(20); askPhone();
+  };
+}
+
+async function askPhone() {
+  await bot('E o seu WhatsApp com DDD?');
+  _handler = val => {
+    addMsg('user',val); S.phone=val;
+    fetch(API+'/lead/partial',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:S.nome,email:S.email,phone:S.phone})}).catch(()=>{});
+    setStep(1); setProgress(30); askLinkedIn();
+  };
+}
+
+async function askLinkedIn() {
+  await bot('Você tem LinkedIn? Se sim, cole o link aqui — vou usar para personalizar sua análise.\n\nCaso não tenha, é só digitar "não".');
+  _handler = async val => {
+    addMsg('user',val);
+    if(!val.includes('linkedin.com')){ setStep(2); setProgress(40); await bot('Sem problema! Vou fazer algumas perguntas sobre sua trajetória.'); startChat(null); return; }
+    await bot('Ótimo! Analisando seu perfil...', 300);
+    addTyping();
+    try {
+      const r=await fetch(API+'/linkedin/extract',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:val})});
+      const d=await r.json(); removeTyping();
+      if(d.success&&d.profile?.nome){
+        S.linkedin_profile=d.profile;
+        const exp=d.profile.experiencia?.[0]; const form=d.profile.formacao?.[0];
+        await bot('Encontrei seu perfil!'+(exp?' Vi que você é '+exp.cargo+' na '+exp.empresa+'.':'')+(form?' Formação em '+(form.curso||form.grau)+'.':'')+'\n\nVou usar essas informações na análise.', 400);
+      } else { await bot('Não consegui acessar seu LinkedIn agora. Vamos continuar sem ele.', 400); }
+    } catch { removeTyping(); await bot('Não consegui acessar o LinkedIn. Vamos continuar.', 400); }
+    setStep(2); setProgress(40); startChat(S.linkedin_profile);
+  };
+}
+
+// ── CHAT COM AGENTE ──
+async function startChat(linkedinProfile) {
+  addTyping();
+  try {
+    const r=await fetch(API+'/chat/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:S.session_id,nome:S.nome,email:S.email,phone:S.phone,linkedin_profile:linkedinProfile})});
+    const d=await r.json(); removeTyping();
+    if(d.visa_path) setSideVisto(d.visa_path[0]);
+    addMsg('assistant', d.message);
+    setStep(3); setProgress(50);
+    _handler = sendToAgent;
+  } catch { removeTyping(); await bot('Erro ao iniciar análise. Tente novamente.'); }
+}
+
+async function sendToAgent(val) {
+  _sending=true; addMsg('user',val); addTyping();
+  try {
+    const r=await fetch(API+'/chat/message',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:S.session_id,content:val})});
+    const d=await r.json(); removeTyping();
+    addMsg('assistant', d.message);
+    const pct=Math.min(90, Math.floor(chatEl.children.length/20*80+50));
+    setProgress(pct);
+    if(d.is_ready&&d.analysis){ setStep(4); setProgress(100); setTimeout(()=>showResult(d.analysis),1200); }
+  } catch { removeTyping(); addMsg('assistant','Desculpe, houve um erro. Pode repetir?'); }
+  _sending=false;
+}
+
+function showResult(a) {
+  setSideVisto(a.visto_recomendado);
+  const isLiv=a.partner==='liv';
+  const cta=isLiv
+    ?'<div class="partner-cta liv"><div class="partner-ico liv">⭐</div><div class="partner-info"><div class="partner-name">LIV Law Group</div><div class="partner-desc">Seu perfil tem potencial para imigração para os EUA. Fale com um especialista agora.</div><a href="https://wa.link/pxtk7k" target="_blank" class="partner-btn">Falar com especialista</a></div></div>'
+    :'<div class="partner-cta phoenix"><div class="partner-ico phoenix">🦅</div><div class="partner-info"><div class="partner-name">ImigrarEUA</div><div class="partner-desc">Identificamos caminhos possíveis para seu perfil. Conheça nossas soluções de assessoria.</div><a href="https://lp.imigrareua.com/novos-caminhos-imigrareua/" target="_blank" class="partner-btn phoenix-btn">Saiba mais</a></div></div>';
+  const outros=(a.vistos||[]).filter(v=>v.visto!==a.visto_recomendado).map(v=>'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px"><span>'+v.visto+'</span><span style="color:var(--txt3)">'+v.label+'</span></div>').join('');
+  const html='<div class="res-card"><div class="res-head"><div style="font-size:11px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Visto em Destaque</div><div class="res-visto">'+a.visto_recomendado+'</div><div class="res-label">'+a.label+'</div><div class="res-circle"><div class="res-pts">'+a.score+'</div><div class="res-pts-lbl">score</div></div></div><div class="res-body">'+cta+(outros?'<div style="margin-bottom:16px"><div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);margin-bottom:8px">Outros vistos avaliados</div>'+outros+'</div>':'')+'<div class="disclaimer">Esta análise é informativa e não constitui assessoria jurídica.</div></div></div>';
+  const row=document.createElement('div'); row.className='row';
+  row.innerHTML='<div class="ava ava-bot"><img src="'+AVA_SRC+'" alt=""/></div><div class="msg-wrap" style="max-width:92%">'+html+'</div>';
+  chatEl.appendChild(row); scrollBottom();
+  fetch(API+'/lead/complete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:S.session_id,nome:S.nome,email:S.email,phone:S.phone,analysis:a,utm:getUtms()})}).catch(()=>{});
+}
+
+askNome();
 </script>
 </body>
 </html>
