@@ -16,8 +16,7 @@ app.use('/admin-api', require('./routes/admin'));
 app.get('/health', (_, res) => res.json({ ok: true, version: 'v2' }));
 
 // Serve frontend e admin como estáticos
-app.use('/painel', express.static(path.join(__dirname, '../../admin')));
-app.use('/', express.static(path.join(__dirname, '../../frontend')));
+app.use('/', express.static(path.join(__dirname, '../public')));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`VisaMatch V2 backend running on :${PORT}`));
