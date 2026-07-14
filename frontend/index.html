@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VisaMatch — Análise de Perfil para Imigração</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--c-bg:#0d1117;--c-surface:#161b22;--c-border:#30363d;--c-text:#e6edf3;--c-muted:#8b949e;--c-accent:#2563eb;--c-accent-h:#1d4ed8;--c-green:#22c55e;--c-red:#ef4444;--radius:12px}
+  body{background:var(--c-bg);color:var(--c-text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px}
+  .logo{margin-bottom:32px;text-align:center}
+  .logo h1{font-size:1.5rem;font-weight:700;letter-spacing:-0.5px}
+  .logo p{color:var(--c-muted);font-size:.875rem;margin-top:4px}
+  .card{background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius);width:100%;max-width:600px;padding:24px}
+  /* Contact form */
+  #contact-screen .field{margin-bottom:16px}
+  #contact-screen label{display:block;font-size:.8rem;color:var(--c-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+  #contact-screen input{width:100%;background:#0d1117;border:1px solid var(--c-border);border-radius:8px;padding:10px 14px;color:var(--c-text);font-size:1rem;outline:none;transition:border .2s}
+  #contact-screen input:focus{border-color:var(--c-accent)}
+  .linkedin-row{display:flex;gap:8px;align-items:flex-end}
+  .linkedin-row input{flex:1}
+  .btn{background:var(--c-accent);color:#fff;border:none;border-radius:8px;padding:11px 20px;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .2s;white-space:nowrap}
+  .btn:hover{background:var(--c-accent-h)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-full{width:100%;margin-top:8px;padding:13px}
+  .hint{font-size:.78rem;color:var(--c-muted);margin-top:6px}
+  /* Chat */
+  #chat-screen{display:none;flex-direction:column;height:70vh}
+  #chat-screen.active{display:flex}
+  #messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-bottom:8px}
+  .msg{max-width:88%;padding:12px 16px;border-radius:var(--radius);line-height:1.5;font-size:.95rem}
+  .msg.assistant{background:#1e2736;border:1px solid var(--c-border);align-self:flex-start;border-radius:4px 12px 12px 12px}
+  .msg.user{background:var(--c-accent);align-self:flex-end;border-radius:12px 4px 12px 12px}
+  .input-row{display:flex;gap:8px;margin-top:12px}
+  #user-input{flex:1;background:#0d1117;border:1px solid var(--c-border);border-radius:8px;padding:10px 14px;color:var(--c-text);font-size:.95rem;outline:none;resize:none;transition:border .2s;max-height:120px}
+  #user-input:focus{border-color:var(--c-accent)}
+  /* Result */
+  #result-screen{display:none}
+  #result-screen.active{display:block}
+  .result-header{text-align:center;margin-bottom:24px}
+  .result-header .label{font-size:1.4rem;font-weight:700;margin-bottom:4px}
+  .result-header .visto{color:var(--c-muted);font-size:.9rem}
+  .score-bar{background:#0d1117;border-radius:99px;height:12px;margin:16px 0;overflow:hidden}
+  .score-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#2563eb,#22c55e);transition:width 1s ease}
+  .vistos-list{display:flex;flex-direction:column;gap:8px}
+  .visto-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#0d1117;border-radius:8px;border:1px solid var(--c-border)}
+  .visto-item .name{font-weight:600}
+  .visto-item .score-num{color:var(--c-muted);font-size:.85rem}
+  .cta-box{margin-top:24px;padding:20px;background:#1e2736;border:1px solid var(--c-border);border-radius:var(--radius);text-align:center}
+  .cta-box p{color:var(--c-muted);margin-bottom:16px;font-size:.9rem}
+  .cta-box a{display:inline-block;background:var(--c-accent);color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600;transition:background .2s}
+  .cta-box a:hover{background:var(--c-accent-h)}
+  /* Loading */
+  .typing{display:flex;gap:4px;align-items:center;padding:4px 0}
+  .typing span{width:6px;height:6px;border-radius:50%;background:var(--c-muted);animation:bounce .8s infinite}
+  .typing span:nth-child(2){animation-delay:.15s}
+  .typing span:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+  .linkedin-status{font-size:.78rem;margin-top:4px}
+  .linkedin-status.ok{color:var(--c-green)}
+  .linkedin-status.err{color:var(--c-muted)}
+</style>
+</head>
+<body>
+
+<div class="logo">
+  <h1>VisaMatch</h1>
+  <p>Análise de perfil para imigração americana</p>
+</div>
+
+<!-- Tela 1: Contato + LinkedIn -->
+<div class="card" id="contact-screen">
+  <div class="field">
+    <label>Nome completo</label>
+    <input type="text" id="inp-nome" placeholder="Seu nome" autocomplete="name">
+  </div>
+  <div class="field">
+    <label>E-mail</label>
+    <input type="email" id="inp-email" placeholder="seu@email.com" autocomplete="email">
+  </div>
+  <div class="field">
+    <label>WhatsApp</label>
+    <input type="tel" id="inp-phone" placeholder="+55 11 99999-9999" autocomplete="tel">
+  </div>
+  <div class="field">
+    <label>LinkedIn <span style="color:var(--c-muted);font-weight:400">(opcional)</span></label>
+    <div class="linkedin-row">
+      <input type="url" id="inp-linkedin" placeholder="https://linkedin.com/in/seuperfil">
+      <button class="btn" id="btn-linkedin" onclick="extractLinkedIn()">Analisar</button>
+    </div>
+    <div id="linkedin-status" class="linkedin-status"></div>
+    <p class="hint">Adicionar seu LinkedIn melhora a precisão da análise.</p>
+  </div>
+  <button class="btn btn-full" onclick="startChat()">Iniciar análise</button>
+</div>
+
+<!-- Tela 2: Chat -->
+<div class="card" id="chat-screen">
+  <div id="messages"></div>
+  <div class="input-row">
+    <textarea id="user-input" placeholder="Digite sua resposta..." rows="1" onkeydown="handleKey(event)"></textarea>
+    <button class="btn" onclick="sendMessage()">Enviar</button>
+  </div>
+</div>
+
+<!-- Tela 3: Resultado -->
+<div class="card" id="result-screen">
+  <div class="result-header">
+    <div class="label" id="res-label"></div>
+    <div class="visto" id="res-visto"></div>
+  </div>
+  <div class="score-bar"><div class="score-fill" id="res-bar" style="width:0%"></div></div>
+  <div class="vistos-list" id="res-vistos"></div>
+  <div class="cta-box" id="res-cta"></div>
+</div>
+
+<script>
+const API = 'https://api-v2.visamatch.imigrareua.com'; // troque pelo domínio real
+let S = { session_id: null, nome: '', email: '', phone: '', linkedin_profile: null };
+let _sending = false;
+
+function genSessionId() {
+  return 'v2_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
+
+// Captura UTMs
+function getUtms() {
+  const p = new URLSearchParams(window.location.search);
+  return { utm_source: p.get('utm_source'), utm_medium: p.get('utm_medium'),
+           utm_campaign: p.get('utm_campaign'), utm_content: p.get('utm_content') };
+}
+
+async function extractLinkedIn() {
+  const url = document.getElementById('inp-linkedin').value.trim();
+  if (!url) return;
+  const btn = document.getElementById('btn-linkedin');
+  const status = document.getElementById('linkedin-status');
+  btn.disabled = true; btn.textContent = '...';
+  status.textContent = 'Buscando perfil...'; status.className = 'linkedin-status';
+  try {
+    const r = await fetch(`${API}/linkedin/extract`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+    const d = await r.json();
+    if (d.success && d.profile?.nome) {
+      S.linkedin_profile = d.profile;
+      status.textContent = `✓ Perfil encontrado: ${d.profile.nome}`;
+      status.className = 'linkedin-status ok';
+    } else {
+      status.textContent = 'Perfil não encontrado — continuaremos sem LinkedIn.';
+      status.className = 'linkedin-status err';
+    }
+  } catch {
+    status.textContent = 'Erro ao buscar perfil. Continuaremos sem LinkedIn.';
+    status.className = 'linkedin-status err';
+  }
+  btn.disabled = false; btn.textContent = 'Analisar';
+}
+
+async function startChat() {
+  const nome = document.getElementById('inp-nome').value.trim();
+  const email = document.getElementById('inp-email').value.trim();
+  const phone = document.getElementById('inp-phone').value.trim();
+
+  if (!nome || !email) return alert('Nome e e-mail são obrigatórios.');
+  if (!/\S+@\S+\.\S+/.test(email)) return alert('E-mail inválido.');
+
+  S = { ...S, nome, email, phone, session_id: genSessionId() };
+
+  // Salva parcial imediatamente
+  fetch(`${API}/lead/partial`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ session_id: S.session_id, nome, email, phone }),
+  }).catch(() => {});
+
+  document.getElementById('contact-screen').style.display = 'none';
+  document.getElementById('chat-screen').classList.add('active');
+
+  addTyping();
+  try {
+    const r = await fetch(`${API}/chat/start`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: S.session_id, nome, email, phone, linkedin_profile: S.linkedin_profile }),
+    });
+    const d = await r.json();
+    removeTyping();
+    addMessage('assistant', d.message);
+  } catch {
+    removeTyping();
+    addMessage('assistant', 'Olá! Vamos começar sua análise de perfil. Qual é a sua profissão principal?');
+  }
+}
+
+async function sendMessage() {
+  if (_sending) return;
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  _sending = true;
+  addMessage('user', text);
+  input.value = '';
+  input.style.height = 'auto';
+  addTyping();
+
+  try {
+    const r = await fetch(`${API}/chat/message`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: S.session_id, content: text }),
+    });
+    const d = await r.json();
+    removeTyping();
+    addMessage('assistant', d.message);
+
+    if (d.is_ready && d.analysis) {
+      setTimeout(() => showResult(d.analysis), 1500);
+    }
+  } catch {
+    removeTyping();
+    addMessage('assistant', 'Desculpe, houve um erro. Pode repetir?');
+  }
+  _sending = false;
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  // Auto-resize
+  e.target.style.height = 'auto';
+  e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+}
+
+function addMessage(role, text) {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addTyping() {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg assistant'; div.id = 'typing-indicator';
+  div.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping() {
+  document.getElementById('typing-indicator')?.remove();
+}
+
+function showResult(analysis) {
+  document.getElementById('chat-screen').classList.remove('active');
+  const res = document.getElementById('result-screen');
+  res.classList.add('active');
+
+  document.getElementById('res-label').textContent = analysis.label;
+  document.getElementById('res-visto').textContent = `Visto em destaque: ${analysis.visto_recomendado}`;
+
+  const score = Math.max(0, Math.min(100, analysis.score + 50)); // normaliza -100..100 → 0..100
+  setTimeout(() => document.getElementById('res-bar').style.width = score + '%', 100);
+
+  const list = document.getElementById('res-vistos');
+  (analysis.vistos || []).forEach(v => {
+    const item = document.createElement('div');
+    item.className = 'visto-item';
+    item.innerHTML = `<span class="name">${v.visto}</span><span class="score-num">${v.label}</span>`;
+    list.appendChild(item);
+  });
+
+  // CTA baseado no partner
+  const cta = document.getElementById('res-cta');
+  if (analysis.partner === 'liv') {
+    cta.innerHTML = `<p>Seu perfil tem potencial para imigração para os EUA. Um especialista pode avaliar seu caso em detalhe.</p>
+      <a href="https://wa.link/pxtk7k" target="_blank" rel="noopener">Falar com especialista</a>`;
+  } else {
+    cta.innerHTML = `<p>Identificamos caminhos possíveis para o seu perfil. Conheça nossas soluções de assessoria.</p>
+      <a href="https://lp.imigrareua.com/novos-caminhos-imigrareua/" target="_blank" rel="noopener">Saiba mais</a>`;
+  }
+
+  // Salva lead completo
+  fetch(`${API}/lead/complete`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ session_id: S.session_id, nome: S.nome, email: S.email, phone: S.phone, analysis, utm: getUtms() }),
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>
